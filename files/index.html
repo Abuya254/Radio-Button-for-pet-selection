@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioButtonDemo - Pet Selection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .pet-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .radio-option:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .radio-option label {
+            cursor: pointer;
+            font-size: 18px;
+            color: #333;
+            flex: 1;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .radio-option:has(input:checked) {
+            background: #e8edff;
+            border-color: #667eea;
+        }
+
+        .pet-thumb {
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: #fff;
+            padding: 3px;
+            border: 2px solid #ddd;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            color: #155724;
+            text-align: center;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Custom Modal for displaying pet picture */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content h2 {
+            color: #333;
+            margin: 0 0 20px 0;
+            font-size: 24px;
+        }
+
+        .modal-pet-image {
+            width: 280px;
+            height: 280px;
+            object-fit: contain;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            border: 4px solid #667eea;
+        }
+
+        .modal-message {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .modal-close-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 Pet Selection 🐾</h1>
+        <p class="subtitle">Choose your favorite pet</p>
+        
+        <div class="pet-options">
+            <div class="radio-option">
+                <input type="radio" id="bird" name="pet" value="Bird">
+                <label for="bird">
+                    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Bird.png" alt="Bird" class="pet-thumb">
+                    Bird
+                </label>
+            </div>
+            
+            <div class="radio-option">
+                <input type="radio" id="cat" name="pet" value="Cat">
+                <label for="cat">
+                    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Cat.png" alt="Cat" class="pet-thumb">
+                    Cat
+                </label>
+            </div>
+            
+            <div class="radio-option">
+                <input type="radio" id="dog" name="pet" value="Dog">
+                <label for="dog">
+                    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Dog.png" alt="Dog" class="pet-thumb">
+                    Dog
+                </label>
+            </div>
+            
+            <div class="radio-option">
+                <input type="radio" id="rabbit" name="pet" value="Rabbit">
+                <label for="rabbit">
+                    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Hare.png" alt="Rabbit" class="pet-thumb">
+                    Rabbit
+                </label>
+            </div>
+            
+            <div class="radio-option">
+                <input type="radio" id="pig" name="pet" value="Pig">
+                <label for="pig">
+                    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Pig.png" alt="Pig" class="pet-thumb">
+                    Pig
+                </label>
+            </div>
+        </div>
+
+        <button class="submit-btn" onclick="showSelection()">Show My Selection</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <h2>Your Selection</h2>
+            <img src="" alt="Selected Pet" class="modal-pet-image" id="modalImage">
+            <p class="modal-message" id="modalMessage"></p>
+            <button class="modal-close-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Animal drawings (cartoon style from GitHub)
+        const animalPictures = {
+            "Bird": "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Bird.png",
+            "Cat": "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Cat.png",
+            "Dog": "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Dog.png",
+            "Rabbit": "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Hare.png",
+            "Pig": "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Pig.png"
+        };
+
+        function showSelection() {
+            // Get all radio buttons with name "pet"
+            const petRadios = document.getElementsByName('pet');
+            let selectedPet = null;
+
+            // Find the selected radio button
+            for (let radio of petRadios) {
+                if (radio.checked) {
+                    selectedPet = radio.value;
+                    break;
+                }
+            }
+
+            // Display custom modal with selection and picture
+            if (selectedPet) {
+                const modal = document.getElementById('modal');
+                const modalImage = document.getElementById('modalImage');
+                const modalMessage = document.getElementById('modalMessage');
+                
+                modalImage.src = animalPictures[selectedPet];
+                modalMessage.textContent = "You have selected: " + selectedPet + " 🐾";
+                modal.classList.add('show');
+                
+                // Also show inline result
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = "✅ You selected: " + selectedPet;
+                resultDiv.classList.add('show');
+            } else {
+                alert("Please select a pet! 🐾");
+                
+                // Hide result if nothing selected
+                const resultDiv = document.getElementById('result');
+                resultDiv.classList.remove('show');
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
+
